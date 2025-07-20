@@ -1,32 +1,56 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "B"
+driver_name = "Best driver"
+bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
-def soumthing_infrount(obstacle):
+
+def soumthing_infrount(world, pose, obstacle):
     if obstacle == obstacles.PENGUIN:
         return actions.PICKUP
-    elif obstacle == obstacles.WATER:
+    if obstacle == obstacles.WATER:
         return actions.BRAKE
-    elif obstacle == obstacles.CRACK:
+    if obstacle == obstacles.CRACK:
         return actions.JUMP
-    elif obstacle in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]:
-        if x == 0 or x == 3:
+    return pingwin(world, pose)
+
+
+def chek_corner(world, pos, xAdjaster):
+    if world.get((pos[0], pos[1] - 1)) == obstacles.PENGUIN or world.get((pos[0] + xAdjaster, pos[1] - 1)) in bad:
+        return 0
+    if world.get((pos[0] + xAdjaster, pos[1] - 1)) == obstacles.PENGUIN or world.get(
+            (pos[0] + 2 * xAdjaster, pos[1] - 2)) == obstacles.PENGUIN or world.get((pos[0], pos[1] - 1)) in bad:
+        return xAdjaster
+    return -xAdjaster
+
+
+def check_center(world, pos):
+    if world.get((pos[0]), pos[1] - 1) == obstacles.PENGUIN:
+        return actions.NONE
+    if world.get((pos[0] - 1), pos[1] - 1) == obstacles.PENGUIN or pos[1]> world.get((pos[0] - 1), pos[
+                                                                                               1] - 2) == obstacles.PENGUIN and world.get(
+            (pos[0] - 1), pos[1] - 1) not in bad:
+        return actions.LEFT
+    if world.get((pos[0] + 1), pos[1] - 1) not in bad:
+        return actions.RIGHT
+
+
+def pingwin(world, pos):
+    if pos[0] == 0 or pos[0] == 3:
+        if chek_corner(world, pos, 1) == 1:
             return actions.RIGHT
-        elif x == 2 or x == 5:
+        return actions.NONE
+    if pos[0] == 2 or pos[0] == 5:
+        if chek_corner(world, pos, -1) == -1:
             return actions.LEFT
-        elif world.get((x - 1, y - 1)) in [obstacles.NONE, obstacles.PENGUIN]:
-            return actions.LEFT
-        else:
-            return actions.RIGHT
-def
+        return actions.NONE
+    return check_center(world, pos)
+
+
 def drive(world):
-    x = world.car.x
-    y = world.car.y
+    pos = [world.car.x, world.car.y]
     try:
-        obstacle = world.get((x, y - 1))
+        obstacle = world.get((pos[0], pos[1]))
     except IndexError:
         return actions.NONE
     else:
-        soumthing_infrount(obstacle)
-
-    return actions.NONE
+        return soumthing_infrount(world, pose, obstacle)
