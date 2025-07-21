@@ -30,7 +30,8 @@ def check_center(world, pos):
         possible.append(actions.LEFT)
         if world.get(pos["fr"]) in bad: return actions.LEFT
         else: possible.append(actions.RIGHT)
-    allSame = True if len(possible) == 0 else False
+    if world.get(pos["f"]) == obstacles.NONE: possible.append(actions.NONE)
+    allSame = True if len(possible) == 0 or len(possible) == 3 else False
     if allSame and world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
     if world.get(pos["ffr"]) == obstacles.PENGUIN : return actions.RIGHT
     if world.get(pos["ffl"]) == obstacles.PENGUIN : return actions.LEFT
