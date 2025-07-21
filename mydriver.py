@@ -3,7 +3,6 @@ from rose.common import obstacles, actions  # NOQA
 driver_name = "Best driver"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
-
 def soumthing_infrount(world, pose, obstacle):
     if obstacle == obstacles.PENGUIN:
         return actions.PICKUP
@@ -24,15 +23,15 @@ def chek_corner(world, pos, xAdjaster):
 
 
 def check_center(world, pos):
-    if world.get((pos[0]), pos[1] - 1) == obstacles.PENGUIN:
+    if world.get(pos[0], pos[1] - 1) == obstacles.PENGUIN:
         return actions.NONE
-    if world.get((pos[0] - 1), pos[1] - 1) == obstacles.PENGUIN or pos[1]> world.get((pos[0] - 1), pos[
-                                                                                               1] - 2) == obstacles.PENGUIN and world.get(
-            (pos[0] - 1), pos[1] - 1) not in bad:
+    if world.get(pos[0] - 1, pos[1] - 1) == obstacles.PENGUIN or( pos[1] > 2 and world.get(pos[0] - 1, pos[
+                                                                                                        1] - 2) == obstacles.PENGUIN and world.get(
+        pos[0] - 1, pos[1] - 1) not in bad):
         return actions.LEFT
-    if world.get((pos[0] + 1), pos[1] - 1) not in bad:
+    if world.get(pos[0] + 1, pos[1] - 1) not in bad :
         return actions.RIGHT
-
+    return actions.NONE
 
 def pingwin(world, pos):
     if pos[0] == 0 or pos[0] == 3:
@@ -53,4 +52,5 @@ def drive(world):
     except IndexError:
         return actions.NONE
     else:
+        if world.get(pos[0], pos[1] - 1) == obstacles.NONE: return pingwin(world, pos)
         return soumthing_infrount(world, pose, obstacle)
