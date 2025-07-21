@@ -5,7 +5,7 @@ bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
 def check_corner(world, pos, xAdjaster):
-    if world.get(pos["f"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.NONE] and world.get(pos["f" + xAdjaster]) in [obstacles.NONE, obstacles.PENGUIN] and world.get(pos["ff"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.NONE] and world.get(pos["ff" + xAdjaster]) in [obstacles.NONE, obstacles.WATER, obstacles.CRACK, obstacles.PENGUIN]
+    if world.get(pos["f"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.NONE] and world.get(pos["f" + xAdjaster]) in [obstacles.NONE, obstacles.PENGUIN] and world.get(pos["ff"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.NONE] and world.get(pos["ff" + xAdjaster]) in [obstacles.NONE, obstacles.WATER, obstacles.CRACK, obstacles.PENGUIN]: return actions.RIGHT if xAdjaster == "r" else actions.LEFT
     if world.get(pos["f"]) in bad:
         if world.get(pos["f" + xAdjaster]) in (obstacles.PENGUIN, obstacles.NONE):
             return actions.RIGHT if xAdjaster == "r" else actions.LEFT
