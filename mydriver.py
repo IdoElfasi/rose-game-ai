@@ -1,43 +1,106 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.0"
-bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
+driver_name = "pathDrive v2.0"
+points = {"": (0, 0), "crack": (5, -10), "trash": (-10, -10), "penguin": (10, 0), "bike": (-10, -10), "water": (4, -10),
+          "barrier": (-10, -10)}
 
 
-def check_corner(world, pos, xAdjaster):
-    if world.get(pos["f" + xAdjaster]) in (obstacles.PENGUIN, obstacles.NONE) and world.get(
-            pos["ff" + xAdjaster]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER,actions.NONE):
-        return actions.RIGHT if xAdjaster == "r" else actions.LEFT
-    if world.get(pos["f"]) == obstacles.NONE:
-        return actions.NONE
-    return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+def check_corner(world, pos, p, xAdjaster, counter):
+    fpos = mouve_pos(pos, 0, -1)
+    fpoints = directByLane(world, fpos, p + points[world.get(fpos["s"])][0], counter - 1)
+    if xAdjaster == "l":
+        mpos = mouve_pos(fpos, -1, 0)
+    else:
+        mpos = mouve_pos(fpos, 1, 0)
+    mpoints = directByLane(world, mpos, p + points[world.get(mpos["s"])][1], counter - 1)
+    if fpoints > mpoints:
+        if counter == 4:
+            return "f"
+        return fpoints
+    if counter == 4:
+        return xAdjaster
+    return mpoints
 
 
-def check_center(world, pos):
-    if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffl"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.LEFT
-    if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffr"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.RIGHT
-    if world.get(pos["f"]) in bad:
-        if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.LEFT
-        if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.RIGHT
+def biger(f, l, r):
+    if f > l:
+        if f > r:
+            return "f"
+        else:
+            return "r"
+    if r > l: return "r"
+    return "l"
+
+
+def check_center(world, pos, p, counter):
+    fpos = mouve_pos(pos, 0, -1)
+    fpoints = directByLane(world, fpos, p + points[world.get(pos["f"])][0], counter - 1)
+    rpos = mouve_pos(fpos, 1, 0)
+    rpoints = directByLane(world, rpos, p + points[world.get(pos["fr"])][1], counter - 1)
+    lpos = mouve_pos(fpos, -1, 0)
+    lpoints = directByLane(world, lpos, p + points[world.get(pos["fl"])][1], counter - 1)
+    big = biger(fpoints, lpoints, rpoints)
+    if big == "f":
+        if counter == 4:
+            return "f"
+        return fpoints
+    if big == "r":
+        if counter == 4:
+            return "r"
+        return rpoints
+    if counter == 4:
+        return "l"
+    return lpoints
+
+
+def mouve_pos(pos, mx, my):
+    list_pos = pos.copy()
+    fpos = pos.copy()
+    for i in pos:
+        list_pos[i] = list(list_pos[i])
+        list_pos[i][0] = pos[i][0] + mx
+        list_pos[i][1] = pos[i][1] + my
+        fpos[i] = tuple(list_pos[i])
+    return fpos
+
+
+def directByLane(world, pos, p, counter):
+    if counter == 0 or pos["s"][1] < 1: return p + points[world.get(pos["s"])][0]
+    if pos["s"][0] == 0 or pos["s"][0] == 3:
+        if counter == 4:
+            return check_corner(world, pos, p, "r", counter)
+        pos = mouve_pos(pos, 1, -1)
+        return directByLane(world, pos, p + check_corner(world, pos, p, "r", counter), counter - 1)
+    if pos["s"][0] == 2 or pos["s"][0] == 5:
+        if counter == 4:
+            return check_corner(world, pos, p, "l", counter)
+        pos = mouve_pos(pos, -1, -1)
+        return directByLane(world, pos, p + check_corner(world, pos, p, "l", counter), counter - 1)
+    if counter == 4:
+        return check_center(world, pos, p, counter)
+    return directByLane(world, pos, p + check_center(world, pos, p, counter), counter - 1)
+
+
+def picc_actions(obstacle):
+    if obstacle == obstacles.PENGUIN:
+        return actions.PICKUP
+    if obstacle == obstacles.WATER:
+        return actions.BRAKE
+    if obstacle == obstacles.CRACK:
+        return actions.JUMP
     return actions.NONE
 
 
-def directByLane(world, pos):
-    if world.get(pos["f"]) == obstacles.PENGUIN: return actions.PICKUP
-    if world.get(pos["f"]) == obstacles.WATER: return actions.BRAKE
-    if world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
-    if pos["s"][0] == 0 or pos["s"][0] == 3:
-        return check_corner(world, pos, "r")
-    if pos["s"][0] == 2 or pos["s"][0] == 5:
-        return check_corner(world, pos, "l")
-    return check_center(world, pos)
-
-
 def drive(world):
-    x, y = world.car.x, world.car.y
-    poss = {"s": (x, y), "f": (x, y - 1), "fl": (x - 1, y - 1), "fr": (x + 1, y - 1), "ffl": (x - 1, y - 2),
-            "ffr": (x + 1, y - 2), "ffll": (x - 2, y - 2), "ffrr": (x + 2, y - 2), "ff": (x, y - 2)}
+    x = world.car.x
+    y = world.car.y
+    poss = {"s": (x, y), "f": (x, y - 1), "fl": (x - 1, y - 1), "fr": (x + 1, y - 1)}
     try:
-        return directByLane(world, poss)
+        d = directByLane(world, poss, 0, 4)
+        if d == "r": return actions.RIGHT
+        if d == "l": return actions.LEFT
+        return picc_actions(world.get(poss["f"]))
     except IndexError:
         return actions.NONE
+
+
