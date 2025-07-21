@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.6"
+driver_name = "SmartDrive v1.6.1"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
@@ -20,7 +20,7 @@ def check_corner(world, pos, xAdjaster):
 
 
 def check_center(world, pos):
-    possible = []
+    possible = [actions.NONE, actions.LEFT, actions.LEFT]
     if world.get(pos["f"]) in bad: possible.remove(actions.NONE)
     if world.get(pos["fl"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.WATER, obstacles.CRACK]: possible.remove(actions.LEFT)
     if world.get(pos["fr"]) in [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.WATER, obstacles.CRACK]: possible.remove(actions.RIGHT)
