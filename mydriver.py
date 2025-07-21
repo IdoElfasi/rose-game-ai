@@ -1,16 +1,7 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v0.3"
+driver_name = "SmartDrive v0.3.1"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
-
-def something_infront(world, pose, obstacle):
-    if obstacle == obstacles.PENGUIN:
-        return actions.PICKUP
-    if obstacle == obstacles.WATER:
-        return actions.BRAKE
-    if obstacle == obstacles.CRACK:
-        return actions.JUMP
-    return pingwin(world, pose)
 
 
 def check_corner(world, pos, xAdjaster):
@@ -40,7 +31,7 @@ def check_center(world, pos):
     return actions.NONE
 
 
-def pingwin(world, pos):
+def directByLane(world, pos):
     if pos["s"][0] == 0 or pos["s"][0] == 3:
         return check_corner(world, pos, "r")
     if pos["s"][0] == 2 or pos["s"][0] == 5:
@@ -54,7 +45,6 @@ def drive(world):
             "ffr": (x + 1, y - 2), "ffll": (x - 2, y - 2), "ffrr": (x + 2, y - 2), "ff": (x, y - 2)}
     try:
         obstacle = world.get(poss["f"])
-        if world.get(poss["f"]) == obstacles.NONE: return pingwin(world, poss)
-        return something_infront(world, poss, obstacle)
+        return directByLane(world, poss)
     except IndexError:
         return actions.NONE
