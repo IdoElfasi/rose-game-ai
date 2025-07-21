@@ -1,9 +1,9 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "Best drhaer"
+driver_name = "SmartDrive v0.3"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
-def soumthing_infrount(world, pose, obstacle):
+def something_infront(world, pose, obstacle):
     if obstacle == obstacles.PENGUIN:
         return actions.PICKUP
     if obstacle == obstacles.WATER:
@@ -13,7 +13,7 @@ def soumthing_infrount(world, pose, obstacle):
     return pingwin(world, pose)
 
 
-def chek_corner(world, pos, xAdjaster):
+def check_corner(world, pos, xAdjaster):
     if world.get(pos["f"]) == obstacles.PENGUIN:
         return actions.PICKUP
     elif world.get(pos["f"]) == obstacles.WATER:
@@ -28,21 +28,23 @@ def chek_corner(world, pos, xAdjaster):
 
 
 def check_center(world, pos):
+    print("Checking Center")
     if world.get(pos["f"]) == obstacles.PENGUIN: return actions.PICKUP
     elif world.get(pos["f"]) == obstacles.WATER: return actions.BRAKE
     elif world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
-    elif world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) or (pos["s"][1] > 2 and world.get(pos["ffl"]) == obstacles.PENGUIN and world.get(pos["fl"]) not in bad):
-        return actions.LEFT
-    elif world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and world.get(pos["ffr"] == obstacles.PENGUIN):
-        return actions.RIGHT
+    elif world.get(pos["f"]) in bad:
+        if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffl"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.LEFT
+        elif world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffr"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.RIGHT
+        elif world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.LEFT
+        else: return actions.RIGHT
     return actions.NONE
 
 
 def pingwin(world, pos):
     if pos["s"][0] == 0 or pos["s"][0] == 3:
-        return chek_corner(world, pos, "r")
+        return check_corner(world, pos, "r")
     if pos["s"][0] == 2 or pos["s"][0] == 5:
-        return chek_corner(world, pos, "l")
+        return check_corner(world, pos, "l")
     return check_center(world, pos)
 
 
@@ -53,6 +55,6 @@ def drive(world):
     try:
         obstacle = world.get(poss["f"])
         if world.get(poss["f"]) == obstacles.NONE: return pingwin(world, poss)
-        return soumthing_infrount(world, poss, obstacle)
+        return something_infront(world, poss, obstacle)
     except IndexError:
         return actions.NONE
