@@ -14,11 +14,11 @@ def check_corner(world, pos, xAdjaster):
 
 
 def check_center(world, pos):
+    if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffl"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.LEFT
+    if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffr"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.RIGHT
     if world.get(pos["f"]) in bad:
-        if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffl"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.LEFT
-        if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffr"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.RIGHT
         if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.LEFT
-        return actions.RIGHT
+        if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.RIGHT
     return actions.NONE
 
 
