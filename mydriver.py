@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.6.2"
+driver_name = "SmartDrive v1.6.3"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
@@ -14,6 +14,8 @@ def check_corner(world, pos, xAdjaster):
             return actions.NONE
     if world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
     if world.get(pos["ff" + xAdjaster]) == obstacles.PENGUIN : return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+    if world.get(pos["f"]) == obstacles.WATER : return actions.BRAKE
+    if world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
     if world.get(pos["ff"]) in (obstacles.CRACK, obstacles.WATER) : return actions.NONE
     if world.get(pos["ff" + xAdjaster]) in (obstacles.CRACK, obstacles.WATER) : return actions.RIGHT if xAdjaster == "r" else actions.LEFT
     if world.get(pos["ff"]) == obstacles.NONE : return actions.NONE
@@ -31,6 +33,8 @@ def check_center(world, pos):
     if (allSame or actions.NONE in possible) and world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
     if (allSame or actions.LEFT in possible) and world.get(pos["ffl"]) == obstacles.PENGUIN: return actions.LEFT
     if (allSame or actions.RIGHT in possible) and world.get(pos["ffr"]) == obstacles.PENGUIN: return actions.RIGHT
+    if world.get(pos["f"]) == obstacles.WATER : return actions.BRAKE
+    if world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
     if (allSame or actions.NONE in possible) and world.get(pos["ff"]) in (obstacles.CRACK, obstacles.WATER) : return actions.NONE
     if (allSame or actions.LEFT in possible) and world.get(pos["ffl"]) in (obstacles.CRACK, obstacles.WATER): return actions.LEFT
     if (allSame or actions.RIGHT in possible) and world.get(pos["ffr"]) in (obstacles.CRACK, obstacles.WATER): return actions.RIGHT
@@ -42,8 +46,8 @@ def check_center(world, pos):
 
 def directByLane(world, pos):
     if world.get(pos["f"]) == obstacles.PENGUIN: return actions.PICKUP
-    if world.get(pos["f"]) == obstacles.WATER: return actions.BRAKE
-    if world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
+    # if world.get(pos["f"]) == obstacles.WATER: return actions.BRAKE
+    # if world.get(pos["f"]) == obstacles.CRACK: return actions.JUMP
     if pos["s"][0] == 0 or pos["s"][0] == 3:
         return check_corner(world, pos, "r")
     if pos["s"][0] == 2 or pos["s"][0] == 5:
