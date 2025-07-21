@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.4"
+driver_name = "SmartDrive v1.5"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
@@ -20,24 +20,20 @@ def check_corner(world, pos, xAdjaster):
 
 
 def check_center(world, pos):
-    if world.get(pos["fl"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffl"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.LEFT
-    if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE) and pos["s"][1] > 2 and world.get(pos["ffr"]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER): return actions.RIGHT
     possible = []
-    if world.get(pos["fl"]) in bad:
-
-        if world.get(pos["fr"]) in (obstacles.PENGUIN, obstacles.NONE): return actions.RIGHT
-    else:
-        possible.append(actions.LEFT)
-        if world.get(pos["fr"]) in bad: return actions.LEFT
-        else: possible.append(actions.RIGHT)
-    if world.get(pos["f"]) == obstacles.NONE: possible.append(actions.NONE)
+    if world.get(pos["f"]) in bad: possible.remove(actions.NONE)
+    if world.get(pos["fl"]) in bad: possible.remove(actions.LEFT)
+    if world.get(pos["fr"]) in bad: possible.remove(actions.RIGHT)
     allSame = True if len(possible) == 0 or len(possible) == 3 else False
-    if allSame and world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
-    if world.get(pos["ffr"]) == obstacles.PENGUIN : return actions.RIGHT
-    if world.get(pos["ffl"]) == obstacles.PENGUIN : return actions.LEFT
-    if allSame and world.get(pos["ff"]) in (obstacles.CRACK, obstacles.WATER): return actions.NONE
-    if world.get(pos["ffr"]) in (obstacles.CRACK, obstacles.WATER): return actions.RIGHT
-    if world.get(pos["ffl"]) in (obstacles.CRACK, obstacles.WATER): return actions.LEFT
+    if (allSame or actions.NONE in possible) and world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
+    if (allSame or actions.LEFT in possible) and world.get(pos["fl"]) == obstacles.PENGUIN: return actions.LEFT
+    if (allSame or actions.RIGHT in possible) and world.get(pos["fr"]) == obstacles.PENGUIN: return actions.RIGHT
+    if (allSame or actions.NONE in possible) and world.get(pos["ff"]) in (obstacles.CRACK, obstacles.WATER) : return actions.NONE
+    if (allSame or actions.LEFT in possible) and world.get(pos["fl"]) in (obstacles.CRACK, obstacles.WATER): return actions.LEFT
+    if (allSame or actions.RIGHT in possible) and world.get(pos["fr"]) in (obstacles.CRACK, obstacles.WATER): return actions.RIGHT
+    if (allSame or actions.NONE in possible) and world.get(pos["ff"]) == obstacles.NONE : return actions.NONE
+    if (allSame or actions.LEFT in possible) and world.get(pos["fl"]) == obstacles.NONE: return actions.LEFT
+    if (allSame or actions.RIGHT in possible) and world.get(pos["fr"]) == obstacles.NONE: return actions.RIGHT
     return actions.NONE
 
 
