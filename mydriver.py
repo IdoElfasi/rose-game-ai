@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.3"
+driver_name = "SmartDrive v1.4"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
