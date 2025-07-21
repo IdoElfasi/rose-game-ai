@@ -5,12 +5,16 @@ bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 
 
 def check_corner(world, pos, xAdjaster):
-    if world.get(pos["f" + xAdjaster]) in (obstacles.PENGUIN, obstacles.NONE) and world.get(
-            pos["ff" + xAdjaster]) in (obstacles.PENGUIN, obstacles.CRACK, obstacles.WATER,actions.NONE):
-        return actions.RIGHT if xAdjaster == "r" else actions.LEFT
-    if world.get(pos["f"]) == obstacles.NONE:
-        return actions.NONE
-    return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+    if world.get(pos["f"]) in bad:
+        if (world.get(pos["f" + xAdjaster]) in (obstacles.PENGUIN, obstacles.NONE): return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+    else:
+        if (world.get(pos["f" + xAdjaster]) in bad: return actions.NONE
+    if world.get(pos["ff"]) == obstacles.PENGUIN : return actions.NONE
+    if world.get(pos["ff" + xAdjaster]) == obstacles.PENGUIN : return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+    if world.get(pos["ff"]) in (obstacles.CRACK, obstacles.WATER) : return actions.NONE
+    if world.get(pos["ff" + xAdjaster]) in (obstacles.CRACK, obstacles.WATER) : return actions.RIGHT if xAdjaster == "r" else actions.LEFT
+    if world.get(pos["ff"]) == obstacles.NONE : return actions.NONE
+    if world.get(pos["ff" + xAdjaster]) == obstacles.NONE : return actions.RIGHT if xAdjaster == "r" else actions.LEFT
 
 
 def check_center(world, pos):
