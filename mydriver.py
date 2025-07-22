@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "Drive #7 v1.7"
+driver_name = "Drive #7 v1.7.1"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 badmove = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.WATER, obstacles.CRACK]
 
@@ -84,7 +84,7 @@ def directByLane(world, pos):
 def drive(world):
     x, y = world.car.x, world.car.y
     poss = {"s": (x, y), "f": (x, y - 1), "fl": (x - 1, y - 1), "fr": (x + 1, y - 1), "ffl": (x - 1, y - 2),
-            "ffr": (x + 1, y - 2), "ffll": (x - 2, y - 2), "ffrr": (x + 2, y - 2), "ff": (x, y - 2), "fffll": (x - 2, y - 3), "fffrr": (x + 2, y - 3)}
+            "ffr": (x + 1, y - 2), "ff": (x, y - 2), "fffl": (x - 1, y - 3), "fffr": (x + 1, y - 3)}
     try:
         return directByLane(world, poss)
     except IndexError:
