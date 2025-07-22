@@ -1,6 +1,6 @@
 from rose.common import obstacles, actions  # NOQA
 
-driver_name = "SmartDrive v1.6.5"
+driver_name = "Drive #7 v1.7"
 bad = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER]
 badmove = [obstacles.TRASH, obstacles.BIKE, obstacles.BARRIER, obstacles.WATER, obstacles.CRACK]
 
@@ -46,6 +46,8 @@ def check_center(world, pos):
     ff = world.get(pos["ff"])
     ffl = world.get(pos["ffl"])
     ffr = world.get(pos["ffr"])
+    fffr = world.get(pos["fffr"])
+    fffl = world.get(pos["fffl"])
     possible = [actions.NONE, actions.LEFT, actions.RIGHT]
     if f in bad: possible.remove(actions.NONE)
     if fl in badmove: possible.remove(actions.LEFT)
@@ -57,6 +59,8 @@ def check_center(world, pos):
         if f == obstacles.CRACK: return actions.JUMP
     if (allSame or actions.LEFT in possible) and ffl == obstacles.PENGUIN: return actions.LEFT
     if (allSame or actions.RIGHT in possible) and ffr == obstacles.PENGUIN: return actions.RIGHT
+    if (allSame or actions.LEFT in possible) and fffl == obstacles.PENGUIN: return actions.LEFT
+    if (allSame or actions.RIGHT in possible) and fffr == obstacles.PENGUIN: return actions.RIGHT
     if f == obstacles.WATER: return actions.BRAKE
     if f == obstacles.CRACK: return actions.JUMP
     if (allSame or actions.NONE in possible) and ff in (obstacles.CRACK, obstacles.WATER): return actions.NONE
@@ -80,7 +84,7 @@ def directByLane(world, pos):
 def drive(world):
     x, y = world.car.x, world.car.y
     poss = {"s": (x, y), "f": (x, y - 1), "fl": (x - 1, y - 1), "fr": (x + 1, y - 1), "ffl": (x - 1, y - 2),
-            "ffr": (x + 1, y - 2), "ffll": (x - 2, y - 2), "ffrr": (x + 2, y - 2), "ff": (x, y - 2)}
+            "ffr": (x + 1, y - 2), "ffll": (x - 2, y - 2), "ffrr": (x + 2, y - 2), "ff": (x, y - 2), "fffll": (x - 2, y - 3), "fffrr": (x + 2, y - 3)}
     try:
         return directByLane(world, poss)
     except IndexError:
